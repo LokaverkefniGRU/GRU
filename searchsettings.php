@@ -21,7 +21,6 @@ $search_string = mysqli_real_escape_string($db, $search_string);
 
 if (strlen($search_string) >= 1) {
 	$query = 'SELECT * FROM user WHERE fullname LIKE "%' . $search_string . '%" OR username LIKE "%' . $search_string . '%"';
-
 	$result = $db->query($query);
 	while($results = $result->fetch_array()) {
 		$result_array[] = $results;
@@ -34,7 +33,6 @@ if (strlen($search_string) >= 1) {
 			$display_name = preg_replace("/" . $search_string . "/i", "<b class='highlight'>" . $search_string . "</b>", $result['fullname']);
 			$display_username = preg_replace("/" . $search_string . "/i", "<b class='highlight'>" . $search_string . "</b>", $result['username']);
 			$display_url = 'http://lokaverkefni.cf/profile.php?id=' . urlencode($result['id']);
-			$display_button = 'http://lokaverkefni.cf/searchresults.php';
 
 			// Insert Name
 			$output = str_replace('nameString', $display_name, $html);

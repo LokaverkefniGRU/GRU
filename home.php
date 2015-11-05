@@ -36,7 +36,8 @@ if (isset($_POST['content'])) {
     <head> 
     <title><?php echo($title['global']) ?></title>
     <?php styles(); ?>
-    <!-- <link href="style/style.css" rel="stylesheet" type="text/css" /> -->
+    <link href="style/style.css" rel="stylesheet" type="text/css" />
+
     </head> 
     <style type="text/css">
     body{
@@ -134,19 +135,19 @@ if (isset($_POST['content'])) {
         <div class="container-low">
             <div class="row">
                 <?php 
-                    // $sql = "SELECT user.firstname, user.fullname, post.ID, post.content, post.user_ID, post.time FROM post
-                    //         JOIN user ON post.user_ID = user.ID
-                    //         JOIN friend_request ON user.ID = friend_request.receiver_ID
-                    //         WHERE friend_request.sender_ID = $id OR friend_request.receiver_ID = $id AND confirmed =1";
-                    $sql = "SELECT * FROM post";
-                    //$sql = "SELECT * FROM user";
+                    $sql = "SELECT user.firstname, user.fullname, post.ID, post.content, post.user_ID, post.time FROM post
+                            JOIN user ON post.user_ID = user.ID
+                            JOIN friend_request ON user.ID = friend_request.receiver_ID
+                            WHERE friend_request.sender_ID = $id OR friend_request.receiver_ID = $id AND confirmed =1";
                     $result = $db->query($sql);
-                    if ($result->num_rows > 0) {
+                    if (is_object($result) && $result->num_rows > 0) {
                         while($row = $result->fetch_assoc()) {
                             echo($row['content'] . " - <a href=http://lokaverkefni.cf/profile.php?id=" . $row['user_id'] . ">" . $row['post_username'] . "</a><br>");
                         }
                     } else {
-                        echo "0 results";
+                        echo "<p>No Posts.. Maybe add some friends?</p>";
+                        echo '<br><input type="text" id="search" autocomplete="off">
+                                <ul id="results"></ul>';
                     }
                  ?>
 
@@ -154,10 +155,9 @@ if (isset($_POST['content'])) {
         </div>
     </div>
     </body> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/respond.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.backstretch.min.js"></script>
     <script src="assets/js/scripts.js"></script>
+    <script type="text/javascript" src="scripts/custom.js"></script>
 </html> 

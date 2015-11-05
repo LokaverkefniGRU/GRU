@@ -9,12 +9,10 @@ if (isset($_SESSION['id'])){
     $query = "UPDATE `user` SET  `online` =  '1' WHERE `id` = '" . $_SESSION['id'] . "';";
     $result = mysqli_query($db, $query);
 }
+
 if (!isset($_GET['id'])) {
     header('Location: profile.php?id=' . $_SESSION['id']);
 }
-
-$salt = "Kókómjólk";
-$salt2 = "Goji Berry!";
 		
 $id = $_GET['id'];
 // til að ná í fyrir profile
@@ -47,14 +45,19 @@ if (isset($_POST['send_email'])) {
     $to      = $user['email'];
     $subject = 'Please confirm your email for lokaverkefni.cf';
     $message = 'Your confirmation link: http://lokaverkefni.cf/confirmation.php?passkey=' . $confirm_code .'';
-    $headers = 'From: lokaverkefni.cf@gmail.com' . "\r\n" .
-        'Reply-To: lokaverkefni.cf@gmail.com' . "\r\n" .
+    $headers = 'From: no-reply@lokaverkefni.cf' . "\r\n" .
+        'Reply-To: no-reply@lokaverkefni.cf' . "\r\n" .
         'X-Mailer: PHP/' . phpversion();
 
     mail($to, $subject, $message, $headers);    
 }
 
 if (isset($_POST['new_password'])) {
+    $Salt = uniqid();
+    $Algo = '6';
+    $Rounds = '10000';
+    $CryptSalt = '$' . $Algo . '$rounds=' . $Rounds . '$' . $Salt;
+
     $new_password = strip_tags($_POST['new_password']);
     $new_password2 = strip_tags($_POST['new_password2']);
     if ($new_password != $new_password2) {
@@ -62,8 +65,8 @@ if (isset($_POST['new_password'])) {
     }else{
         $new_password = strip_tags($_POST['new_password']);
         $new_password = mysqli_real_escape_string($db, $new_password);
-        $new_password = md5($salt2 . $new_password . $salt);
-        $query = "UPDATE  `0712982139_gru`.`user` SET  `password` =  '" . $new_password . "', `change_password` =  '0' WHERE  `user`.`id` =" . $user_id . ";";
+        $new_password = crypt($new_password, $CryptSalt);
+        $query = "UPDATE `user` SET  `password` =  '" . $new_password . "', `salt` =  '" . $CryptSalt . "', `change_password` =  '0' WHERE  `user`.`id` =" . $user_id . ";";
         $result = mysqli_query($db, $query);
     if (!$result) {
         echo '<script type="text/javascript">alert("Some Tech Issues!, Try again later!")</script>';
@@ -222,6 +225,7 @@ if ($user['change_password'] == 1) {
         <div class="name">
             <span><h3 class='header-text text-left profile-h2'><?php echo($profile['fullname'])?></h3><?php if($profile['online'] == 1){echo('<i class="fa fa-circle text-green"></i>');}elseif($profile['online'] == 0){echo('<i class="fa fa-circle text-red"></i>');} ?></span>
         </div>
+
         <?php
         $query = "SELECT * FROM post WHERE user_id = $profileid";
         $result = mysqli_query($db, $query);
@@ -264,13 +268,10 @@ if ($user['change_password'] == 1) {
 
 
  </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
     <script src="scripts/main.js"></script>
     <script type="text/javascript" src="http://todaymade.com/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://todaymade.com/js/respond.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
-    <script src="assets/js/jquery-1.11.1.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.backstretch.min.js"></script>
     <script src="assets/js/scripts.js"></script>
     <script type="text/javascript">
     setInterval("update()", 1000); // Update every 1 seconds 

@@ -92,12 +92,12 @@ if (isset($_POST['new_password'])) {
 
       $expensions= array("jpeg","jpg","png");
       
-      if(in_array($file_ext,$expensions)=== false){
-         $errors[]="extension not allowed, please choose a JPEG or PNG file.";
+      if(in_array($file_ext,$expensions) === false){
+         $errors[]="Extension not allowed, please choose a JPEG or PNG file.";
       }
       
       if($file_size > 10000000){
-         $errors[]='File size must be excately';
+         $errors[]='File size must be less than 10mb!';
       }
       
       if(empty($errors)==true){
@@ -109,9 +109,6 @@ if (isset($_POST['new_password'])) {
            echo "Error!";
          }
          header('Location: editprofile.php');
-      }
-      else{
-         print_r($errors);
       }
    }
 
@@ -176,6 +173,9 @@ textarea.form-control {
 .bs-callout-success h4 {
     color: #5cb85c;
 }
+.color-red{
+  color:red;
+}
 </style>	
 
  </head>
@@ -226,15 +226,23 @@ textarea.form-control {
     <form action="" method="POST" enctype="multipart/form-data">
         <div class="form-group">
         <label for="image">Update Profile Picture</label>
-        <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/gif,image/tiff">
+        <input type="file" name="image" id="image" accept="image/png,image/jpeg,image/jpg">
         <p class="help-block">Max size: 10mb</p>
+        <p class="help-block color-red"><?php 
+        if(isset($_FILES['image']))
+        {
+          if (!empty($errors)) {
+            print_r($errors[0]);
+          }
+        }
+          ?>  </p>
       </div>
       <button type="submit" class="btn btn-default">Change</button>
     </form>
 </div>
 
 <div class="col-md-8">
-    <form action="editprofile.php" method="POST">
+    <form action="" method="POST" id="form">
       <div class="form-group">
         <label for="f_name">First name:</label>
         <input type="text" class="form-control" name="f_name" id="f_name" placeholder="First Name..." <?php echo 'value="' . $user['firstname'] . '"'; ?>>
@@ -279,7 +287,7 @@ textarea.form-control {
                                 <label class="sr-only" for="form-password">Password</label>
                                 <input type="password" name="new_password2" placeholder="New Password Again..." class="form-username form-control" id="password2">
                             </div>
-                            <button type="submit" value="getResponse" class="btn">Change!</button>
+                            <button id="submit" value="getResponse" class="btn">Change!</button>
                         </form>
                     </div>
                 </div>
@@ -288,7 +296,8 @@ textarea.form-control {
 
 
  </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
     <script type="text/javascript" src="http://todaymade.com/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://todaymade.com/js/respond.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
+    
  </html>

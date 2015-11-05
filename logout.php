@@ -1,9 +1,10 @@
 <?php
 include 'include/config.php';
 session_start();
-$query = "UPDATE user SET online = 0 WHERE id = '" . $_SESSION['id'] . "';";
-$result = mysqli_query($db, $query);
+	
 if (isset($_SESSION['id'])) {
+	// $query = "UPDATE user SET online = 0 WHERE id = '" . $_SESSION['id'] . "';";
+	// $result = mysqli_query($db, $query);
 	unset($_SESSION['id']);
 	unset($_SESSION['username']);
 	header("Location: index.php");
