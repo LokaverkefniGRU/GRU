@@ -5,8 +5,6 @@ $errors = array();
 $errors_login = array();
 if (isset($_SESSION['id'])) {
     header("Location: home.php");
-    $query = "UPDATE `user` SET  `online` =  '1' WHERE `id` = '" . $_SESSION['id'] . "';";
-    $result = mysqli_query($db, $query);
 }
 
 // ná i iptölu hja user
@@ -18,385 +16,335 @@ if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
     $ip = $_SERVER['REMOTE_ADDR'];
 }
 
-// Sem login
-if (isset($_POST['username'])) {
-    $username = strip_tags($_POST['username']);
-    $username = strtolower($username);
-    $username = mysqli_real_escape_string($db, $username);
-    $password = strip_tags($_POST['password']);
-    $password = mysqli_real_escape_string($db, $password);
-
-    $result = mysqli_query($db, "SELECT id, username, password, salt FROM  `user` WHERE username =  '$username'");
-    $array = mysqli_fetch_array($result);
-
-    $id = $array[0];
-    $dbusername = $array[1];
-    $dbpassword = $array[2];
-    $CryptSalt = $array[3];
-
-    $hashed_password = crypt($password, $CryptSalt);
-    if($dbusername == $username && $dbpassword == $hashed_password){
-        $_SESSION['username'] = $username;
-        $_SESSION['id'] = $id;
-        // Fyrir ip á undan
-        $query = "SELECT ip FROM user WHERE id = '" . $id . "';";
-        $result = mysqli_query($db, $query);
-        $iptala = mysqli_fetch_array($result, MYSQLI_ASSOC);
-
-        $query = "UPDATE `user` SET  `last_ip` =  '" . $iptala['ip'] . "' WHERE `id` = $id;";
-        $result = mysqli_query($db, $query);
-        
-        $query = "UPDATE `user` SET  `ip` =  '" . $ip . "' WHERE `id` = $id;";
-        $result = mysqli_query($db, $query);
-        // Fyrir ip nuna
-        $query = "UPDATE `user` SET  `ip` =  '" . $ip . "' WHERE `id` = $id;";
-        $result = mysqli_query($db, $query);
-        header("Location: profile.php");
-    } else {
-        $_SESSION["username"] = $username;
-        $errors_login[]="Wrong Username or Password!";
-        echo "<script>alert('Wrong Username or Password!')</script>";
-
-    }
-}
-// Fyrir registeratin
-if (isset($_POST['reg_password'])) {
-    $reg_password = strip_tags($_POST['reg_password']);
-    $reg_password2 = strip_tags($_POST['reg_password2']);
-    if ($reg_password != $reg_password2) {
-        $errors[]='Your passwords do not match!';
-        echo "<script>alert('Your passwords do not match!')</script>";
-        $_SESSION['reg_f_name'] = strip_tags($_POST['reg_f_name']);
-        $_SESSION['reg_l_name'] = strip_tags($_POST['reg_l_name']);
-        $_SESSION['reg_username'] = strip_tags($_POST['reg_username']);
-        $_SESSION['reg_email'] = strip_tags($_POST['reg_email']);
-    }else if(isset($_POST['reg_f_name'])) {
-        $Salt = uniqid();
+//Fyrir registeratin
+if (isset($_POST['reg_f_name'])) {
+       $Salt = md5(uniqid(time()));
         $Algo = '6';
         $Rounds = '10000';
         $CryptSalt = '$' . $Algo . '$rounds=' . $Rounds . '$' . $Salt;
 
-        $id = time();
-        $reg_f_name = strip_tags($_POST['reg_f_name']);
-        $reg_l_name = strip_tags($_POST['reg_l_name']);
-        $reg_full_name = strip_tags($reg_f_name . " " . $reg_l_name);
-        $reg_username = strip_tags($_POST['reg_username']);
-        $reg_username = strtolower($reg_username);
-        $reg_password = strip_tags($_POST['reg_password']);
-        $reg_email = strip_tags($_POST['reg_email']);
-        
-        $reg_f_name = mysqli_real_escape_string($db, $reg_f_name);
-        $reg_l_name = mysqli_real_escape_string($db, $reg_l_name);
-        $reg_full_name = mysqli_real_escape_string($db, $reg_full_name);
-        $reg_username = mysqli_real_escape_string($db, $reg_username);
-        $reg_password = mysqli_real_escape_string($db, $reg_password);
-        $hashed_password = crypt($reg_password, $CryptSalt);
-        $reg_email = mysqli_real_escape_string($db, $reg_email);
-        // Random confirmation code 
-        $confirm_code = md5(uniqid(rand())); 
-        $query = "INSERT INTO `user` (`id`, `firstname`, `lastname`, `fullname`, `username`, `password`, `salt`, `email`, `confirm_code`, `confirmed`, `ip`) VALUES ('$id', '$reg_f_name', '$reg_l_name', '$reg_full_name', '$reg_username', '$hashed_password', '$CryptSalt', '$reg_email', '$confirm_code' , 0, '$ip');";
-        $result = mysqli_query($db, $query);
-    if (!$result) {
-        $errors[]='We could not insert you into our database';
-    }else{
-        $_SESSION['username'] = $username;
-        $_SESSION['id'] = $id;
-        header("Location: profile.php");
-        // Set inn email php kóðan her
-        $to      = $reg_email;
-        $subject = 'Please confirm your email for lokaverkefni.cf';
-        $message = 'Your confirmation link: http://lokaverkefni.cf/confirmation.php?passkey=' . $confirm_code .'';
-        $headers = 'From: no-reply@lokaverkefni.cf' . "\r\n" .
-            'Reply-To: no-reply@lokaverkefni.cf' . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
+       $id = time();
+       $reg_f_name = strip_tags($_POST['reg_f_name']);
+       $reg_l_name = strip_tags($_POST['reg_l_name']);
+       $reg_full_name = strip_tags($reg_f_name . " " . $reg_l_name);
+       $reg_username = strip_tags($_POST['reg_username']);
+       $reg_username = strtolower($reg_username);
+       $reg_password = strip_tags($_POST['reg_password']);
+       $reg_email = strip_tags($_POST['reg_email']);
+       $reg_f_name = mysqli_real_escape_string($db, $reg_f_name);
+       $reg_l_name = mysqli_real_escape_string($db, $reg_l_name);
+       $reg_full_name = mysqli_real_escape_string($db, $reg_full_name);
+       $reg_username = mysqli_real_escape_string($db, $reg_username);
+       $reg_email = mysqli_real_escape_string($db, $reg_email);
+       
+       $reg_password = mysqli_real_escape_string($db, $reg_password);
+       $hashed_password = crypt($reg_password, $CryptSalt);
+       
+       // Random confirmation code 
+       $confirm_code = md5(uniqid(rand())); 
+       $query = "INSERT INTO `user` (`id`, `firstname`, `lastname`, `fullname`, `username`, `password`, `salt`, `email`, `confirm_code`, `confirmed`, `ip`) VALUES ('$id', '$reg_f_name', '$reg_l_name', '$reg_full_name', '$reg_username', '$hashed_password', '$CryptSalt', '$reg_email', '$confirm_code' , 0, '$ip');";
+       $result = mysqli_query($db, $query);
+       header('Location: index.php');
 
-        mail($to, $subject, $message, $headers);
-        }
-    }
+   if (!$result) {
+       echo "<script>alert('We Could not create your user, please try again..')</script>";
+       header('Location: index.php');
+   }else{
+       $_SESSION['username'] = $username;
+       $_SESSION['id'] = $id;
+       header("Location: profile.php");
+       // Set inn email php kóðan her
+       $to      = $reg_email;
+       $subject = 'Please confirm your email for lokaverkefni.com';
+       $message = 'Your confirmation link: https://lokaverkefni.com/confirmation.php?passkey=' . $confirm_code .'';
+       $headers = 'From: no-reply@lokaverkefni.com' . "\r\n" .
+           'Reply-To: no-reply@lokaverkefni.com' . "\r\n" .
+           'X-Mailer: PHP/' . phpversion();
+
+       mail($to, $subject, $message, $headers);
+       }
 }
 
-if (isset($_POST['lost_email'])) {
-    $Salt = uniqid();
-    $Algo = '6';
-    $Rounds = '10000';
-    $CryptSalt = '$' . $Algo . '$rounds=' . $Rounds . '$' . $Salt;
+// Check if username is already in db
+$array_reg_username = array();
+$query = "SELECT username FROM user";
+$result = mysqli_query($db, $query);
 
-    $lost_email = strip_tags($_POST['lost_email']);
-    $lost_email = mysqli_real_escape_string($db, $lost_email);
+while($row = $result->fetch_assoc()) {
+    array_push($array_reg_username, $row['username']);
+}
 
-    $rand_password = uniqid(rand());
-    $rand_password_crypt = crypt($rand_password, $CryptSalt);
-    
-    $to      = $lost_email;
-    $subject = 'Password Recover';
-    $message = 'Your password is: ' . $rand_password .'';
-    $headers = 'From: no-reply@lokaverkefni.cf' . "\r\n" .
-        'Reply-To: no-reply@lokaverkefni.cf' . "\r\n" .
-        'X-Mailer: PHP/' . phpversion();
+// Check if email is already in db
+$array_reg_email = array();
+$query = "SELECT email FROM user";
+$result = mysqli_query($db, $query);
 
-    mail($to, $subject, $message, $headers);
-    $query = "UPDATE `user` SET  `password` =  '" . $rand_password_crypt . "', `salt` =  '" . $CryptSalt . "', `change_password` =  '1' WHERE  `user`.`email` = '" . $lost_email . "';";
-    // $query = "UPDATE `user` SET  `password` =  '" . $rand_password_crypt . "', `change_password` =  '1' WHERE  `user`.`email` = '" . $lost_email . "';";
-    $result = mysqli_query($db, $query);
- }
+while($row = $result->fetch_assoc()) {
+    array_push($array_reg_email, $row['email']);
+}
 
-maintenance();
 ?>
 
-<html lang="en"> 
-    <head> 
-        <link href="http://tsuts.tskoli.is/2t/0712982139/GRU/img/favicon.ico" rel="icon" type="image/x-icon" />
-    	<title><?php echo($title['global']); ?></title>
-        <meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">	
-		<link rel="icon" href="img/favicon.ico" type="image/gif" sizes="16x16">
-		<link rel="stylesheet" type="text/css" href="http://tsuts.tskoli.is/2t/0712982139/gru/css/style.css">
-        <link rel="stylesheet" type="text/css" href="css/buttons.css">
-        <link rel="stylesheet" href="assets/css/form-elements.css">
-        <link rel="stylesheet" href="assets/css/style.css">
-    </script>
-    </head> 
-<style type="text/css">
-h1{
-     word-wrap: break-word;
-     -webkit-hyphens: auto;
-     -moz-hyphens: auto;
-     -ms-hyphens: auto;
-     -o-hyphens: auto;
-     hyphens: auto;
-}
-.margin-test{
-    margin: 0 auto;
-    padding-left: 27%;
-}
-.margin{
-    margin: 0 auto;
-    padding-left: 45%;
-}
-
-.container-low{
-    margin-top: 20%;
-}
-.bg{
-    height: 100%;
-    width: 100%;
-    background: url(http://i.imgur.com/f57cIUI.jpg?1) no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-}
-.col-md-3{
-        width: 30%;
-    }
-
-@media only screen and (max-width: 700px) {
-    .col-md-3{
-        width: 50%;
-    }
-    .margin-test{
-        padding-left: 0;
-    }
-}
-@media only screen and (max-width: 991px) {
-    .col-md-3{
-        width: 50%;
-    }
-    .margin-test{
-        padding-left: 0;
-    }
-}
-.center-text{
-    text-align: center;
-}
-.color-red{
-  color:red;
-}
-</style>
+<html>
+<head>
+    <title>Coffee</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="eddi/style/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="eddi/style/slideshowindex.css">    
+</head>
 <body>
-<div class="bg">
+
+<!-- BEGINNING OF HTML -->
+<div class="page">
+
+        <ul id="ss" class="cb-slideshow">
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+            <li>
+                <span></span>
+            </li>
+        </ul>
+
     <div class="container">
-        <div class="container-low">
-            <h1 class="text-center">We love making people stay connected</h1>
-            <div class="margin-test">
-                <div class="col-md-3 col-sm-3 col-xs-6"><a href="#" class="btn btn-sm animated-button thar-four launch-modal" data-modal-id="modal-login">Login</a> </div>  
-                <div class="col-md-3 col-sm-3 col-xs-6"><a href="#" class="btn btn-sm animated-button thar-three launch-modal" data-modal-id="modal-register">Register</a></div> 
+        <div class="logreg-buttons">
+            <button class="btn register" type="button" data-parent="#accordion"data-toggle="collapse" href="#login" data-target="#register">Sign up</button>
+            <button class="btn login" type="button" data-parent="#accordion" data-toggle="collapse" href="#login" data-target="#login">Log in</button>
+        </div>
+
+        <!-- LOGIN -->
+<div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+        <div id="login" data-parent="#accordion" class="collapse login col-lg-2">
+        
+            <form action="" method="POST" class="form-horizontal">
+                <legend>Log in</legend>
+                <span id="login_reg"></span>
+                <!-- Text input-->
+                <div class="form-group">
+                    <div class="col-lg-12">
+                      <input id="username" name="" type="text" placeholder="Username" class="form-control input-md">
+                    </div>
+                </div>
+                <!-- Password input-->
+                <div class="form-group">
+                    <div class="col-lg-12">
+                        <input id="password" name="" type="password" placeholder="Password" class="form-control input-md">
+                    </div>
+                </div>
+                <a href="recover.php">Lost password?</a>
+                <div class="form-group">
+                    <div class="">
+                        <button type="button" id="loginButton" class="btn btn-primary">Log in</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- REGISTER -->
+    <div id="register" data-parent"#accordion" class="collapse register col-lg-2">
+        <form class="form-horizontal" action="" method="POST">
+            <fieldset>
+
+            <!-- Lengrið á forminu -->
+            <legend>Sign up</legend>
+
+            <!-- First Name -->
+            <div class="form-group">
+              <div class="col-lg-12">
+              <input id="reg_f_name" name="reg_f_name" type="text" placeholder="First name" class="form-control input-md" autocomplete="off">
+              </div>
             </div>
 
+            <!-- Last Name -->
+            <div class="form-group">
+              <div class="col-lg-12">
+              <input id="reg_l_name" name="reg_l_name" type="text" placeholder="Last name" class="form-control input-md" autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Username -->
+            <span id="usernameout"></span>
+            <div id="div_reg_user" class="form-group">
+              <div class="col-lg-12">
+              <input id="reg_username" name="reg_username" type="text" placeholder="Username" class="form-control input-md" autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Email -->
+            <span id="emailout"></span>
+            <div class="form-group">
+              <div class="col-lg-12">
+              <input id="reg_email" name="reg_email" type="email" placeholder="E-mail" class="form-control input-md" autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Password -->
+            <span id="passout"></span>
+            <div class="form-group">
+              <div class="col-lg-12">
+                <input id="reg_password" name="reg_password" type="password" placeholder="Password" class="form-control input-md" autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Password 2 -->
+            <div class="form-group">
+              <div class="col-lg-12">
+                <input id="reg_password2" name="reg_password2" type="password" placeholder="Password again" class="form-control input-md" autocomplete="off">
+              </div>
+            </div>
+          
+            <!-- Button -->
+            <div class="form-group">
+              <div class="col-lg-12">
+                <input type="submit" id="" class="btn btn-primary" value="Sign Up">
+              </div>
+            </div>
+
+            </fieldset>
+            </form>
         </div>
     </div>
 </div>
-<!-- LOST PASSWORD -->
-        <div class="modal fade" id="modal-lost" onkeypress="return runScript(p)" tabindex="-2" role="dialog" aria-labelledby="modal-lost-label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-                        </button>
-                        <h3 class="modal-title" id="modal-lost-label">Lost Password</h3>
-                        <p>Enter your email..</p>
-                    </div>
-                    <div class="modal-body">
-                        <form role="form" action="" method="post" class="registration-form">
-                        <div id="html_element"></div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-username">Username</label>
-                                <input type="text" name="lost_email" placeholder="Email..." class="form-username form-control" id="lost_email">
-                            </div>     
-                            <button type="submit" value="getResponse" class="btn">Recover!</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
 
 
-<!-- LOGIN -->
-        <div class="modal fade" id="modal-login" onkeypress="return runScript(p)" tabindex="-8" role="dialog" aria-labelledby="modal-login-label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-                        </button>
-                        <h3 class="modal-title" id="modal-login-label">Login</h3>
-                        <p>Login so you don't miss the fun!</p>
-                        
-                    </div>
-                    
-                    <div class="modal-body">
-                    <p class="color-red"><?php 
-                            if(isset($_POST['username'])){
-                                if (!empty($errors_login)) {
-                                    print_r($errors_login[0]);
-                                }
-                            }
-                      ?>  </p>
-                        <form role="form" action="" method="post" class="registration-form">
-                        <div id="html_element"></div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-username">Username</label>
-                                <?php 
-                                if (isset($_SESSION['username'])){
-                                    echo '<input type="text" value="' . $_SESSION['username'] . '" name="username" placeholder="Username..." class="form-username form-control" id="username">';
-                                }else{
-                                    echo '<input type="text" name="username" placeholder="Username..." class="form-username form-control" id="username">';
-                                }
-                                ?>
-                            </div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-password">Password</label>
-                                <input type="password" name="password" placeholder="Password..." class="form-username form-control" id="password">
-                            </div>       
-                            <button type="submit" value="getResponse" class="btn">Login!</button>
-                            <a href="#"  class="launch-modal margin text-center" data-dismiss="modal" data-modal-id="modal-lost">Lost Password?</a>
-                        </form>
-                    </div>
-                </div>
-            </div>
+        <div class="container stayconn">
+            <h1 class="fyrri">Stay</h1><h1 class="seinni">Connected</h1>
         </div>
-<!-- REGISTER -->
-        <div class="modal fade" id="modal-register" tabindex="-1" role="dialog" aria-labelledby="modal-register-label" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-                        </button>
-                        <h3 class="modal-title" id="modal-register-label">Sign up now</h3>
-                        <p>Join us!</p>
-                        
-                    </div>
-                    <div class="modal-body">
-                    <p class="color-red"><?php 
-                            if(isset($_POST['reg_username'])){
-                                if (!empty($errors)) {
-                                    print_r($errors[0]);
-                                }
-                            }
-                      ?>  </p>
-                        <form role="form" action="" method="post" class="registration-form" accept-charset="UTF-8">
-                            <div class="form-group">
-                                <label class="sr-only" for="form-first-name">First name</label>
-                                <input type="text" name="reg_f_name" <?php if (isset($_SESSION['reg_f_name'])){echo 'value="' . $_SESSION['reg_f_name'] . '"';} ?>placeholder="First name..." class="form-first-name form-control" id="reg_f_name">
-                            </div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-last-name">Last name</label>
-                                <input type="text" name="reg_l_name" <?php if (isset($_SESSION['reg_l_name'])){echo 'value="' . $_SESSION['reg_l_name'] . '"';} ?> placeholder="Last name..." class="form-last-name form-control" id="reg_l_name">
-                            </div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-username">Username</label>
-                                <input type="text" name="reg_username" <?php if (isset($_SESSION['reg_username'])){echo 'value="' . $_SESSION['reg_username'] . '"';} ?> placeholder="Username..." class="form-username form-control" id="reg_username">
-                            </div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-email">Email</label>
-                                <input type="text" name="reg_email" <?php if (isset($_SESSION['reg_email'])){echo 'value="' . $_SESSION['reg_email'] . '"';} ?> placeholder="Email..." class="form-email form-control" id="reg_email">
-                            </div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-password">Password</label>
-                                <input type="password" name="reg_password" placeholder="Password..." class="form-username form-control" id="reg_password">
-                            </div>
-                            <div class="form-group">
-                                <label class="sr-only" for="form-password">Password</label>
-                                <input type="password" name="reg_password2" placeholder="Password Again..." class="form-username form-control" id="reg_password2">
-                            </div>
-                            <div class="form-group">
-                                <div class="radio">
-                                  <label>
-                                    <input type="radio" name="sex" id="male" value="male" checked>
-                                    <h5 class="modal-title" id="modal-register-label">Male</h5>
-                                  </label>
-                                </div>
-                                <div class="radio" class="form-control">
-                                  <label>
-                                    <input type="radio" name="sex" id="female" value="female">
-                                    <h5 class="modal-title" id="modal-register-label">Female</h5>
-                                  </label>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn">Sign me up!</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-</body> 
-    <script type="text/javascript" src="http://todaymade.com/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="http://todaymade.com/js/respond.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
-    <script src="assets/js/jquery-1.11.1.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/jquery.backstretch.min.js"></script>
-    <script src="assets/js/scripts.js"></script>
-    <script src="scripts/main.js"></script>
-    <script type="text/javascript">
+    </div>
+</div>
+<footer>
+    <button id="stopss" onclick="noss()" id="close_popup" class="btn stopss">Toggle slideshow</button>
+</footer>
+</body>
+</html>
+<script src="scripts/jquery.js"></script>
+<script src="scripts/bootstrap.js"></script>
+
+<script type="text/javascript">
+
+function noss(){
+    if (document.getElementById('ss').style.display == 'none') {
+        document.getElementById('ss').style.display='block';
+    }
+    else{
+        document.getElementById('ss').style.display='none';
+        document.getElementById('ss').value = 'Banani';
+    }
  
-         $(document).ready(function(){
-            $("#reg_username").change(function(){
-                 $("#reg_username").addClass("input-error");
-             
- 
-            var username=$("#reg_username").val();
- 
-              $.ajax({
-                    type:"POST",
-                    url:"index.php",
-                    data:"reg_username="+username,
-                        success:function(data){
-                        if(data==0){
-                            $("#reg_username").addClass("input-success");
-                        }
-                        else{
-                            $("#reg_username").addClass("input-error");
-                        }
-                    }
-                 });
- 
-            });
- 
-         });
- 
-       </script>
-</html> 
+}
+
+        <?php
+            $email_array = json_encode($array_reg_email);
+            $username_array = json_encode($array_reg_username);
+            echo "var email_array = " . $email_array . ";";
+            echo "var username_array = " . $username_array . ";";
+        ?>
+            
+        var username = document.getElementById("usernameout");
+        var email = document.getElementById("emailout");
+        var password = document.getElementById("passout");
+        var taken = false;
+        
+
+        $("#reg_username").keyup(function(){
+            var input = document.getElementById("reg_username").value.toLowerCase();
+
+            if (jQuery.inArray(input, username_array) != -1) {
+                taken = true;
+            }
+            else{taken=false;}
+
+            if (taken==true) {
+                $( "div_reg_user" ).addClass( "form-group has-warning" );
+                username.innerHTML = '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><b>Error! </b><br> Username is already in use </div>';              
+            }
+            else{
+                username.innerHTML = "";
+            }
+
+        });
+
+        $("#reg_email").keyup(function(){
+            var taken_email = false;
+            var input = document.getElementById("reg_email").value.toLowerCase();
+
+            if (jQuery.inArray(input, email_array) != -1) {
+                taken_email = true;
+            }
+            else{
+                taken_email=false;
+            }
+
+            if (taken_email==true) {
+                email.innerHTML = '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><b>Error! </b><br> Email is already in use </div>';              
+            }
+            else{
+                email.innerHTML = "";
+            }
+
+        });
+        $("#reg_password2").keyup(function(){
+            var pass1 = document.getElementById("reg_password").value;
+            var pass2 = document.getElementById("reg_password2").value;
+            if (pass1.length > 3 && pass2.length > 3) {
+                if (pass1 == pass2) {
+                    password.innerHTML = "";
+                }
+                else{
+                password.innerHTML = '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><b>Error! </b><br> Passwords do not match</div>';              
+                }   
+            }
+            else if(pass1.length < 3 && pass2.length < 3){
+                password.innerHTML = '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><b>Error! </b><br> Password has to be more than 3 letters</div>';              
+            };
+        });
+            
+
+// login
+var login_reg = document.getElementById("login_reg");
+var login = function(){
+      // get the values from the input fields
+    var username = $('#username')[0].value; // Nær í value ur textbox
+    var password = $('#password')[0].value; // Nær í value ur textbox
+  
+    $.ajax({
+        url: "assets/php/login.php", //Reffar á login.php
+        type: "POST", // Þetta er POST skipun
+        data: {
+            username: username, // uername == username
+            password: password  // password == password
+        },
+        success: function(data){ // ef success þá keyrir hann þessa function
+            if (data == false) { // ef data (username & password) == false (Sé vitlaust) Þá keyrir hann þessa error skipun
+                login_reg.innerHTML = '<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><b>Error! </b>Wrong username or password!</div>'; 
+            }
+            else{ // ef data er ekki false (username & password) þá relodar hann síðunni til að userinn hendist á home.php því hann er kominn með session
+                window.location.reload(); // Reload
+            }
+        }
+    })
+}
+$('#password').on('keydown',function(event){
+    if (event.keyCode == 13) {
+        login();
+    };
+});
+$('#loginButton').on('click',login);
+
+</script>

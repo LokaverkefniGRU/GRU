@@ -32,7 +32,7 @@ if (strlen($search_string) >= 1) {
 			// $display_img = preg_replace("/" . "/i", "<b class='highlight'>" . "</b>", $result['image']);
 			$display_name = preg_replace("/" . $search_string . "/i", "<b class='highlight'>" . $search_string . "</b>", $result['fullname']);
 			$display_username = preg_replace("/" . $search_string . "/i", "<b class='highlight'>" . $search_string . "</b>", $result['username']);
-			$display_url = 'http://lokaverkefni.cf/profile.php?id=' . urlencode($result['id']);
+			$display_url = 'https://lokaverkefni.com/profile.php?id=' . urlencode($result['id']);
 
 			// Insert Name
 			$output = str_replace('nameString', $display_name, $html);

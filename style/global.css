@@ -1,0 +1,237 @@
+body{
+	font-family: arial,sans-serif;
+	background-color: rgb(235, 235, 235);
+}
+span.input__label-content{
+	font-size: 12px;
+}
+input.input__field{
+	font-weight: bold;
+	color: orange;
+}
+img.profilepic{
+    height: 30px;
+    width: 30px;
+    float:left;
+}
+button.flwbtn{
+    float:right;
+}
+i.fa-circle{
+    padding-top: 25px;
+    margin-left: 20px;
+}
+.smalltext{
+    font-size: 65%;
+    opacity: .5;
+    float: right;
+}
+li.fullname
+{
+    float: right;
+}
+div.box
+{
+  opacity: 1;
+  transition: visibility 0s, color 0.1s, opacity 0.3s linear;
+}
+div.container-4{
+  opacity: 1;
+  width: 250px;
+  vertical-align: middle;
+  white-space: nowrap;
+  position: absolute;
+  bottom: 2px;
+  left: 60px;
+  -webkit-transition: all .55s ease;
+  -moz-transition: all .55s ease;
+  -ms-transition: all .55s ease;
+  -o-transition: all .55s ease;
+  transition: all .55s ease;
+}
+
+div.container-4 input#search{
+  width: 250px;
+  height: 30px;
+  background: lightgray;
+  border: none;
+  font-size: 10pt;
+  float: left;
+  color: #fff;
+  padding-left: 15px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 3px;
+}
+
+div.container-4 input#search::-webkit-input-placeholder {
+  color: white;
+}
+ 
+div.container-4 input#search:-moz-placeholder { /* Firefox 18- */
+  color: white;  
+}
+ 
+div.container-4 input#search::-moz-placeholder {  /* Firefox 19+ */
+  color: white; 
+}
+ 
+div.container-4 input#search:-ms-input-placeholder {  
+  color: white; 
+}
+
+div.container-4 button.icon{
+  -webkit-border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+ 
+  border: none;
+  background: gray;
+  height: 30px;
+  width: 50px;
+  color: white;
+  opacity: 0;
+  font-size: 10pt;
+  margin-left: -50px;
+ 
+  -webkit-transition: opacity .2s ease;
+  -moz-transition: opacity .2s ease;
+  -ms-transition: opacity .2s ease;
+  -o-transition: opacity .2s ease;
+  transition: opacity .2s ease;
+}
+
+div.container-4:hover button.icon, .container-4:focus button.icon, .container-4:active button.icon{
+  outline: none;
+  opacity: 1;
+}
+ 
+div.container-4:hover button.icon:hover{
+  background: black;
+}
+textarea.postinput {
+  height: 3em;
+  width: 400px;
+  padding: 3px;
+  transition: all 0.5s ease;
+  resize: none;
+}
+div.innradiv{
+  display:inline-block;
+  position:relative;
+  height: 8em
+;}
+textarea.postinput{
+  height: 6em;
+  width: 400px;
+
+}
+textarea.postinput:hover ~ .postsubmit{
+    position:absolute;
+    bottom:0px;
+    right:0px;
+  visibility: visible;
+  opacity: 1;
+}
+button.postsubmit{
+  color: black;
+  opacity: 1;
+  position:absolute;
+  bottom:0px;
+  right:0px;
+  text-align: center;
+  border-right: 1px solid lightgray;
+  border-left: 1px solid lightgray;
+  font-weight: bold;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  font-family: Arial, sans-serif;
+  transition: visibility 0s, color 0.1s, opacity 0.3s linear;
+  width: 80px;
+  }
+button.postsubmit.post:hover
+{
+  color: orange;
+}
+//.utanumhald
+{
+  display:inline-block;
+  position:relative;
+}
+a.postphoto
+{
+  color: black;
+  opacity: 1;
+  position:absolute;
+  bottom:0px;
+  left:0px;
+  text-align: center;
+  border-right: 1px solid lightgray;
+  border-left: 1px solid lightgray;
+  font-weight: bold;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  font-family: Arial, s6ns-serif;
+  transition: visibility 0s, color 0.1s, opacity 0.3s linear;
+  width: 40px;
+}
+a.postphoto:hover
+{
+  color: orange;
+}
+a.postsubmit:hover
+{
+  color:orange;
+}
+a.postinput:hover ~ .box
+{
+  opacity: 1;
+}
+a.postinput:hover ~ .postphoto
+{
+  position:absolute;
+  bottom:0px;
+  right:0px;
+  visibility: visible;
+  opacity: 1;
+}
+div.container-4 input#search:hover ~ .postinput
+{
+  height: 6em;
+  width: 400px;
+}
+li.presentation
+{
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+a.postphoto-success
+{
+    background-color: green;
+}
+button #submit_post{
+    background: transparent;
+    color: black;
+    opacity: 1;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    text-align: center;
+    border-right: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    font-weight: bold;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    font-family: Arial, sans-serif;
+    transition: visibility 0s, color 0.1s, opacity 0.3s linear;
+    width: 80px;
+}
+
+button #submit_post:hover
+{
+  color:orange;
+}
